@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmos Ambientes — Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12141a;
+    --panel: #1a1d26;
+    --panel-line: #2a2e3a;
+    --ink: #e7e9ee;
+    --ink-dim: #8a90a2;
+    --mint: #6ee7b7;
+    --mint-dim: #2f4a42;
+    --amber: #f4b860;
+    --err: #f2726b;
+  }
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+  :root[data-theme="light"] {
+    --bg: #f4f5f7;
+    --panel: #ffffff;
+    --panel-line: #dfe2e8;
+    --ink: #1a1d26;
+    --ink-dim: #666f80;
+    --mint-dim: #d7f3e6;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --panel-line: #dfe2e8;
+      --ink: #1a1d26;
+      --ink-dim: #666f80;
+      --mint-dim: #d7f3e6;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  header.hero {
+    margin-bottom: 48px;
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--mint);
+    margin: 0 0 14px;
+  }
+  .kicker::before { content: "$ "; color: var(--ink-dim); }
+  h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  header.hero p {
+    color: var(--ink-dim);
+    font-size: 17px;
+    max-width: 60ch;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 10px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card h2 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+  }
+  .card .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+  .card p.desc {
+    color: var(--ink-dim);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: -4px 0 0;
+  }
+
+  .inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1 1 120px;
+  }
+  .field label {
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .field input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--bg);
+    border: 1px solid var(--panel-line);
+    border-radius: 6px;
+    color: var(--ink);
+    padding: 9px 10px;
+    width: 100%;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--mint);
+  }
+
+  button.run {
+    align-self: flex-start;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    background: var(--mint-dim);
+    color: var(--mint);
+    border: 1px solid var(--mint-dim);
+    border-radius: 6px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+  }
+  button.run:hover { filter: brightness(1.15); }
+  button.run:active { transform: scale(0.97); }
+
+  .output {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--bg);
+    border: 1px solid var(--panel-line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    min-height: 22px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ink-dim);
+  }
+  .output.ok { color: var(--mint); }
+  .output.err { color: var(--err); }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--panel-line);
+    color: var(--ink-dim);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">algoritmos-ambientes/javascript</p>
+    <h1>Seis algoritmos, um painel</h1>
+    <p>Cada cartão roda uma função exatamente como está no repositório. Ajuste as entradas e aperte executar para ver o resultado.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- Contagem -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Contagem</h2>
+        <span class="tag">Contagem.js</span>
+      </div>
+      <p class="desc">Conta quantos valores inteiros existem em uma lista de números.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="contagem-dados">dados (separados por vírgula)</label>
+          <input id="contagem-dados" type="text" value="3, 4.5, 5, 7, 10, 12">
+        </div>
+      </div>
+      <button class="run" onclick="runContagem()">Executar</button>
+      <div class="output" id="out-contagem"></div>
+    </div>
+
+    <!-- Somatorio -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Somatório</h2>
+        <span class="tag">Somatorio.js</span>
+      </div>
+      <p class="desc">Soma todos os inteiros de 1 até N.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="som-n">n</label>
+          <input id="som-n" type="text" value="5">
+        </div>
+      </div>
+      <button class="run" onclick="runSomatorio()">Executar</button>
+      <div class="output" id="out-somatorio"></div>
+    </div>
+
+    <!-- Fibonacci -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Fibonacci</h2>
+        <span class="tag">Fibonnaci.js</span>
+      </div>
+      <p class="desc">Gera os primeiros N termos da sequência de Fibonacci.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="fib-n">n</label>
+          <input id="fib-n" type="text" value="10">
+        </div>
+      </div>
+      <button class="run" onclick="runFibonacci()">Executar</button>
+      <div class="output" id="out-fibonacci"></div>
+    </div>
+
+    <!-- Numero Primo -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Número Primo</h2>
+        <span class="tag">NumeroPrimo.js</span>
+      </div>
+      <p class="desc">Verifica se um número é primo.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="primo-n">num</label>
+          <input id="primo-n" type="text" value="7">
+        </div>
+      </div>
+      <button class="run" onclick="runNumeroPrimo()">Executar</button>
+      <div class="output" id="out-primo"></div>
+    </div>
+
+    <!-- MDC -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Máximo Divisor Comum</h2>
+        <span class="tag">MaximoDivisorComum.js</span>
+      </div>
+      <p class="desc">Calcula o MDC de dois números pelo algoritmo de Euclides.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="mdc-a">a</label>
+          <input id="mdc-a" type="text" value="48">
+        </div>
+        <div class="field">
+          <label for="mdc-b">b</label>
+          <input id="mdc-b" type="text" value="18">
+        </div>
+      </div>
+      <button class="run" onclick="runMdc()">Executar</button>
+      <div class="output" id="out-mdc"></div>
+    </div>
+
+    <!-- Ordenacao -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Ordenação (Quicksort)</h2>
+        <span class="tag">Ordenacao.js</span>
+      </div>
+      <p class="desc">Ordena uma lista de números usando quicksort.</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="sort-arr">lista (separada por vírgula)</label>
+          <input id="sort-arr" type="text" value="3, 6, 8, 10, 1, 2, 1">
+        </div>
+      </div>
+      <button class="run" onclick="runOrdenacao()">Executar</button>
+      <div class="output" id="out-ordenacao"></div>
+    </div>
+
+  </div>
+
+  <footer>algoritmos-ambientes/javascript &middot; painel de demonstração</footer>
+</div>
+
+<script>
+  // ---- Funções originais do repositório ----
+
+  function contagem(dados) {
+    if (!dados || dados.length === 0) return 0;
+    let contador = 0;
+    for (let i = 0; i < dados.length; i++) {
+      if (Number.isInteger(dados[i])) {
+        contador++;
+      }
+    }
+    return contador;
+  }
+
+  function somatorio(n) {
+    if (n < 0) {
+      return "Número inválido. Por favor, insira um número não negativo.";
+    }
+    let soma = 0;
+    for (let i = 1; i <= n; i++) {
+      soma += i;
+    }
+    return soma;
+  }
+
+  function quicksort(arr) {
+    if (arr.length <= 1) return arr;
+    const pivot = arr[arr.length - 1];
+    const left = [];
+    const right = [];
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i] < pivot) {
+        left.push(arr[i]);
+      } else {
+        right.push(arr[i]);
+      }
+    }
+    return [...quicksort(left), pivot, ...quicksort(right)];
+  }
+
+  function numeroPrimo(num) {
+    if (num <= 1) {
+      return false;
+    }
+    for (let i = 2; i < num; i++) {
+      if (num % i === 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function MaximoDivisorComum(a, b) {
+    while (b !== 0) {
+      let temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  }
+
+  function Fibonacci(n) {
+    if (n <= 0) return [];
+    if (n === 1) return [0];
+    let fib = [0, 1];
+    for (let i = 2; i < n; i++) {
+      fib[i] = fib[i - 1] + fib[i - 2];
+    }
+    return fib;
+  }
+
+  // ---- Helpers de UI ----
+
+  function showOutput(id, value, isError) {
+    const el = document.getElementById(id);
+    el.textContent = value;
+    el.classList.remove('ok', 'err');
+    el.classList.add(isError ? 'err' : 'ok');
+  }
+
+  function parseNumberList(str) {
+    return str.split(',').map(s => Number(s.trim())).filter(n => !Number.isNaN(n));
+  }
+
+  // ---- Handlers ----
+
+  function runContagem() {
+    try {
+      const dados = parseNumberList(document.getElementById('contagem-dados').value);
+      const resultado = contagem(dados);
+      showOutput('out-contagem', 'contagem(' + JSON.stringify(dados) + ') = ' + resultado, false);
+    } catch (e) {
+      showOutput('out-contagem', 'Erro: ' + e.message, true);
+    }
+  }
+
+  function runSomatorio() {
+    try {
+      const n = Number(document.getElementById('som-n').value);
+      const resultado = somatorio(n);
+      showOutput('out-somatorio', 'somatorio(' + n + ') = ' + resultado, false);
+    } catch (e) {
+      showOutput('out-somatorio', 'Erro: ' + e.message, true);
+    }
+  }
+
+  function runFibonacci() {
+    try {
+      const n = Number(document.getElementById('fib-n').value);
+      const resultado = Fibonacci(n);
+      showOutput('out-fibonacci', 'Fibonacci(' + n + ') = [' + resultado.join(', ') + ']', false);
+    } catch (e) {
+      showOutput('out-fibonacci', 'Erro: ' + e.message, true);
+    }
+  }
+
+  function runNumeroPrimo() {
+    try {
+      const n = Number(document.getElementById('primo-n').value);
+      const resultado = numeroPrimo(n);
+      showOutput('out-primo', 'numeroPrimo(' + n + ') = ' + resultado, false);
+    } catch (e) {
+      showOutput('out-primo', 'Erro: ' + e.message, true);
+    }
+  }
+
+  function runMdc() {
+    try {
+      const a = Number(document.getElementById('mdc-a').value);
+      const b = Number(document.getElementById('mdc-b').value);
+      const resultado = MaximoDivisorComum(a, b);
+      showOutput('out-mdc', 'MaximoDivisorComum(' + a + ', ' + b + ') = ' + resultado, false);
+    } catch (e) {
+      showOutput('out-mdc', 'Erro: ' + e.message, true);
+    }
+  }
+
+  function runOrdenacao() {
+    try {
+      const arr = parseNumberList(document.getElementById('sort-arr').value);
+      const resultado = quicksort(arr.slice());
+      showOutput('out-ordenacao', 'quicksort([' + arr.join(', ') + ']) = [' + resultado.join(', ') + ']', false);
+    } catch (e) {
+      showOutput('out-ordenacao', 'Erro: ' + e.message, true);
+    }
+  }
+</script>
+</body>
+</html>
